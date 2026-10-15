@@ -1,0 +1,12 @@
+export const SUITS = ['spades', 'hearts', 'diamonds', 'clubs'] as const;
+export const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'] as const;
+export const CARDS_PER_QUARTET = 4;
+export const HAND_SIZE_TARGET = 13; // ideal hand size kalau 4 pemain × 13 kartu
+export const ROOM_CODE_LENGTH = 6;
+export const DEFAULT_BLUFF_WINDOW_MS = 5000;
+export const DEFAULT_ROOM_EXPIRY_MINUTES = 30;
+export const MAX_PLAYERS = 6;
+export const MIN_PLAYERS = 2;
+export type Suit = typeof SUITS[number];
+export type Rank = typeof RANKS[number];
+export type CardId = string; // format: "<rank>-<suit>"
