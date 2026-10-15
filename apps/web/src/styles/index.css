@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens — AGENTS.md §1.4 */
+:root {
+  --color-bg: #faf6ef;
+  --color-surface: #ffffff;
+  --color-primary: #c53030;
+  --color-accent: #1f4e5f;
+  --color-text: #1a1a1a;
+  --color-muted: #6b6b6b;
+  --color-success: #2f855a;
+  --color-danger: #c53030;
+
+  --font-display: 'Caveat', 'Plus Jakarta Sans', cursive;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --pattern-accent: url('/patterns/batik-parang.svg');
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
