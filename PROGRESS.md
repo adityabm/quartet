@@ -30,10 +30,11 @@ User juga boleh update manual kapan saja. Format entry di `§3` singkat saja: ta
 | Repo | `D:\Server\web\quartet` (sudah di-init & push ke GitHub) |
 | Phase saat ini | **Phase 0 — Skeleton** ✅ COMPLETE |
 | Next milestone | Phase 1 — GameEngine (types, protocol catalog, rules pure functions) |
-| Last update | 2026-10-15 (Sesi 2) |
+| Last update | 2026-10-15 (Sesi 3) |
 | Open blockers | 7 PRD + 2 tambahan (lihat §5) — belum dijawab |
 | Total file committed | ~46 source files + ~8 config files |
 | Total lines of code | ~1500 LOC + ~500 LOC test |
+| Dependabot status | Tightened (no major, no noise-prone deps); 22 PR major closed |
 
 ---
 
@@ -110,6 +111,41 @@ Lihat `PROJECT_OVERVIEW.md` §5.1 untuk roadmap lengkap. Catatan singkat:
 
 ## 3. Session Log
 
+### 2026-10-15 — Sesi 3 (Dependabot Cleanup)
+
+**Trigger**: Dependabot membuka 21 PR sekaligus untuk major version upgrades (TypeScript 7, Vite 8, ESLint 10, Vitest 5, React 19, Tailwind 4, framer-motion 14, fastify 6, jsdom 30, dll.) — bertentangan dengan AGENTS §2.5 yang mensyaratkan eksplisit go untuk major upgrades.
+
+**Yang dilakukan:**
+- ✅ Identifikasi masalah: dependabot.yml Phase 0 tidak ada top-level `update-types`, jadi default major-included. Tidak ada `ignore` untuk deps sensitif.
+- ✅ Rewrite `.github/dependabot.yml` dengan kebijakan:
+  - Top-level `update-types: [minor, patch]` di setiap ecosystem — block major.
+  - `open-pull-requests-limit: 3` per ecosystem — kurangi noise.
+  - `ignore` untuk deps sensitif: typescript, vite, eslint, vitest, fastify, @fastify/*, react, react-dom, framer-motion, tailwindcss, tsx, ws, @vitejs/plugin-react, @testing-library/*.
+  - `commit-message` prefix `chore(deps)` / `chore(deps-dev)`.
+  - `labels: ["dependencies", "automated"]` untuk konsistensi.
+- ✅ Commit `e6a61e7` dengan conventional commit message, push ke main.
+- ✅ Tutup 22 PR dependabot (PR #1–21 + yang sudah closed otomatis): hapus head branch via `git push origin --delete` (PR auto-close by GitHub saat branch dihapus).
+- ✅ Tidak bisa POST komentar policy via API anonymous (401) → user informed, fallback ke branch delete (PR closed dengan default message "Closed by user"). Trade-off didokumentasikan.
+
+**Decisions yang diambil:**
+- D15: Dependabot hanya boleh auto-open PR untuk minor + patch. Major butuh eksplisit go.
+- D16: 21 PR dependabot major di-close tanpa komentar policy karena keterbatasan API token. Policy rationale tercatat di dependabot.yml + commit message.
+
+**Lessons learned (untuk AGENTS update nanti):**
+- AGENTS §9 (commit & push workflow) perlu diperkuat: **setiap destructive action ke GitHub remote butuh explicit go dari user**.
+- Saat `git push --delete` ke banyak branch → batch operation harus dapat konfirmasi user, bukan asumsi.
+- Dependabot config baru harus di-test dengan `gh api repos/:owner/:repo/dependabot/updates` atau lewat PR cycle, bukan hanya structural YAML check.
+
+**Open questions / blockers:**
+- 7 PRD + 2 tambahan masih open (lihat §5).
+- Belum ada token GitHub PAT di environment — kalau perlu write API (komentar issue, label, dsb) perlu token.
+
+**Next session plan:**
+- Phase 1 — GameEngine: tulis `packages/shared/types` lengkap (Card, Player, GameState, RoomCode), `packages/shared/protocol` (WS event catalog), `packages/shared/rules` (init, deal, ask, completeQuartet, isGameOver, applyAction) dengan unit tests 100% coverage.
+- Workflow baru: 1 branch = 1 PR = 1 push. Tidak push langsung ke main lagi.
+
+---
+
 ### 2026-10-15 — Sesi 2 (Phase 0 — Skeleton)
 
 **Yang dilakukan:**
@@ -184,6 +220,8 @@ Lihat `PROJECT_OVERVIEW.md` §5.1 untuk roadmap lengkap. Catatan singkat:
 | D12 | 2026-10-15 | Unit tests wajib dengan coverage target | shared 100%, bot ≥90%, game ≥85%, FE hooks ≥80% | AGENTS §2.2 |
 | D13 | 2026-10-15 | Upgrade fastify v4 → v5 (5.12.5+) | Fix 10 audit vulnerabilities (6 high, 3 moderate, 1 low) | audit report Phase 0 |
 | D14 | 2026-10-15 | `apps/web` typecheck pakai `tsc -b` (no `--noEmit`) | Resolve TS project reference konflik dengan `composite: true` + `noEmit` | TS6310 error |
+| D15 | 2026-10-15 | Dependabot: hanya minor + patch otomatis | Major upgrades butuh eksplisit go (AGENTS §2.5) | Sesi 3, dependabot.yml |
+| D16 | 2026-10-15 | Tutup 22 PR dependabot major via branch delete | API POST butuh token; trade-off: PR closed tanpa komentar policy | Sesi 3 |
 
 ---
 
@@ -242,18 +280,20 @@ Lihat `PROJECT_OVERVIEW.md` §5.1 untuk roadmap lengkap. Catatan singkat:
 
 ```
 ╔════════════════════════════════════════════════════════════╗
-║  Quartet Web — Status Sesi 2 (2026-10-15)                  ║
+║  Quartet Web — Status Sesi 3 (2026-10-15)                  ║
 ╠════════════════════════════════════════════════════════════╣
 ║  📋 PRD                       ✅ Done (Sesi 1)               ║
 ║  🏗  Project Overview          ✅ Done (Sesi 1)               ║
 ║  🤖 Agent Manual               ✅ Done (Sesi 1)               ║
-║  📈 Progress Tracker           ✅ Done (this file)            ║
+║  📈 Progress Tracker           ✅ Updated (Sesi 3)            ║
 ║  💻 Phase 0 — Skeleton         ✅ Done (Sesi 2)               ║
 ║  🧪 Tests (16 tests)           ✅ Passing                     ║
 ║  🔒 Security Review            ✅ Done (0 High/Critical)      ║
-║  🚀 Push ke GitHub             ✅ Done                        ║
+║  🚀 Push ke GitHub             ✅ Done (Sesi 2)                ║
+║  🤖 Dependabot cleanup         ✅ Done (Sesi 3)                ║
 ╠════════════════════════════════════════════════════════════╣
 ║  Next: Phase 1 — GameEngine (rules + protocol catalog)     ║
+║  Workflow baru: 1 branch = 1 PR, no push langsung ke main ║
 ║  Open blockers: 9 (Q1–Q9, lihat §5)                          ║
 ╚════════════════════════════════════════════════════════════╝
 ```
