@@ -1,0 +1,18 @@
+[Unit]
+Description=Quartet Web Server (Fastify + WS)
+After=network.target
+
+[Service]
+Type=simple
+User=quartet
+Group=quartet
+WorkingDirectory=/opt/quartet/app
+EnvironmentFile=/opt/quartet/.env
+ExecStart=/usr/bin/node apps/server/dist/index.js
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
