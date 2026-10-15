@@ -36,7 +36,7 @@ User juga boleh update manual kapan saja. Format entry di `§3` singkat saja: ta
 | Open blockers        | 7 PRD + 2 tambahan (lihat §5) — belum dijawab                    |
 | Total file committed | ~70 source files + ~12 config files (Phase 0+1)                  |
 | Total lines of code  | ~3500 LOC + ~1500 LOC test                                       |
-| Branch aktif         | `feat/game-engine-phase-1` (5 commits, 0 merged)                 |
+| Branch aktif         | (none — Phase 1 merged to main, branch cleaned up)               |
 | Dependabot status    | Tightened (no major, no noise-prone deps); 22 PR major closed    |
 
 ---
