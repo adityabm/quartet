@@ -103,13 +103,15 @@ User juga boleh update manual kapan saja. Format entry di `§3` singkat saja: ta
 - [ ] FE animasi transfer kartu antar pemain
 - [ ] End-to-end: 2 manusia, 2 device berbeda, 1 game penuh
 
-### Phase 5 — Polish & Launch 🚧 STAGING IN PROGRESS
+### Phase 5 — Polish & Launch ⏸️ DEFERRED (per user, hold for now)
 
-- [x] **Staging deployment setup** — VPS Ubuntu + nginx + Let's Encrypt + systemd (manual, co-pilot mode)
+- [ ] **Staging deployment setup** — VPS Ubuntu + nginx + Let's Encrypt + systemd (template + docs ready, execution deferred)
 - [ ] Animasi Framer Motion (card flip, slide, pulse, celebrate)
 - [ ] Observability minimum (logs, metrics, error tracking)
 - [ ] Production hardening (CSP, helmet, rate limit, audit)
 - [ ] Documentation final + release notes
+
+> Deployment artifacts tersedia di repo (`docs/DEPLOYMENT.md`, `deploy/nginx.conf`, `deploy/quartet.service`, `deploy/.env.production`). Tinggal eksekusi step-by-step di VPS kapan pun siap.
 
 ### Backlog (v1.1, v1.2, v2.0) ⏸️ DEFERRED
 
