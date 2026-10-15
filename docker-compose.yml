@@ -1,0 +1,40 @@
+# docker-compose untuk development lokal Quartet Web.
+# Postgres + Redis dipakai di Phase 4+ (multiplayer).
+# Phase 0: optional, server belum konek DB.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: quartet-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: quartet
+      POSTGRES_PASSWORD: quartet
+      POSTGRES_DB: quartet
+    ports:
+      - "5432:5432"
+    volumes:
+      - quartet-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quartet -d quartet"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: quartet-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - quartet-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  quartet-postgres-data:
+  quartet-redis-data:
