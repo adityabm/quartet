@@ -103,12 +103,12 @@ User juga boleh update manual kapan saja. Format entry di `§3` singkat saja: ta
 - [ ] FE animasi transfer kartu antar pemain
 - [ ] End-to-end: 2 manusia, 2 device berbeda, 1 game penuh
 
-### Phase 5 — Polish & Launch ⏳ TODO
+### Phase 5 — Polish & Launch 🚧 STAGING IN PROGRESS
 
+- [x] **Staging deployment setup** — VPS Ubuntu + nginx + Let's Encrypt + systemd (manual, co-pilot mode)
 - [ ] Animasi Framer Motion (card flip, slide, pulse, celebrate)
-- [ ] Hosting setup (Vercel + Railway, region SG)
 - [ ] Observability minimum (logs, metrics, error tracking)
-- [ ] Staging deploy + smoke test
+- [ ] Production hardening (CSP, helmet, rate limit, audit)
 - [ ] Documentation final + release notes
 
 ### Backlog (v1.1, v1.2, v2.0) ⏸️ DEFERRED
