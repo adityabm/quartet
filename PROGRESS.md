@@ -125,6 +125,58 @@ Lihat `PROJECT_OVERVIEW.md` §5.1 untuk roadmap lengkap. Catatan singkat:
 
 ## 3. Session Log
 
+### 2026-10-15 — Sesi 5 (Phase 2 — Single-player vs bot)
+
+**Yang dilakukan:**
+
+- ✅ Design approval: `docs/design/phase-2-game-ui-mock.md` (355 lines) — layout, components, copy, REST contracts, Indonesian micro-copy.
+- ✅ User approved: "gas".
+- ✅ Create branch `feat/single-player-vs-bot` from main.
+- ✅ Commit design doc di branch.
+- ✅ Dispatch 2 lanes paralel (no write overlap):
+  - Lane A (BE) — BotRunner + GameSession + REST routes + 35 tests.
+  - Lane B (FE) — components/ui + features/game + hooks + GamePage + 4 tests.
+- ✅ Verify langsung artifact (bukan percaya ringkasan subagent) — read `BotRunner.ts`, `useTurn.ts`, `GameTable.tsx`.
+- ✅ Full quality gates: typecheck 5/5, lint 2/2, build 4/4, audit 0 vulnerabilities.
+- ✅ Security review via `security-best-practices` skill → 0 High/Critical; 2 Medium deferred ke Phase 4 (rate limit, helmet); 3 Low deferred ke Phase 5.
+- ✅ 4 logical commits di branch:
+  - `5389611` docs(design): Phase 2 game UI mock
+  - `0ffc409` feat(server): bot runner + game session + REST
+  - `ee2b2ee` feat(web): single-player game UI
+  - `c6b65d5` chore(deps): workspace link + vitest coverage
+- ✅ Merge `1339378` ke main (--no-ff), branch cleanup.
+
+**Decisions yang diambil:**
+
+- D22: `useTurn(state, yourPlayerId)` (subagent deviation dari spec) — benar, menghindari broken gameplay dari useGameSocket() double-hook call.
+- D23: `applyHumanAction` izinkan phase `bluff_window` (subagent deviation) — supaya human-accuser bluff flow tidak deadlock.
+- D24: `BotRunnerDeps.isBot` predicate (subagent deviation) — diperlukan karena shared `PlayerInGame` tidak punya field `isBot`.
+- D25: `createRng(state)` seed per call (subagent bugfix) — sebelumnya constant seed bikin bot stuck (identical decisions per turn).
+- D26: `applyAsk` di FE `BluffModal` kirim `accusedId` dari `bluffWindow.accusedId` — required by `PlayerAction.bluff.call` type.
+- D27: Constructor finalizes game kalau bot opening langsung menang (canonical 2-player drain) — menghindari deadlock di phase='turn' dengan zero valid actions.
+
+**Open UX concern untuk diskusi (Phase 2.5?):**
+
+- 2-player games dengan rules canonical terlalu cepat/degenerasi: human bisa capture semua quartet dalam 1-7 turn. Rules engine **benar** (per shared), tapi UX mungkin perlu adjustment ("lanjut turn hanya kalau quartet terbentuk"). **TIDAK di-implement** — perlu user approval + PRD update per AGENTS §1.1.
+
+**Lessons learned:**
+
+- `localStorage` di `useLocalStorage.ts` (display name only) ��� flagged di security review, low risk karena non-sensitive.
+- `@quartet/shared` workspace link harus explicit di apps/web & apps/server package.json — subagent fix di kedua lane, tanpa itu semua import gagal.
+- `PlayerInGame` shared type tidak punya `isBot` — perlu dependency injection predicate di server-side consumer.
+
+**Next session plan:**
+
+- Phase 3 — Bot Normal + Hard tier:
+  - `apps/server/src/bot/tiers/normal.ts` — greedy + bookkeeping
+  - `apps/server/src/bot/tiers/hard.ts` — Bayesian belief state + expected info gain
+  - Update `GameSession` untuk dispatch ke tier
+  - Update `GamePage` UI untuk selection dropdown (Normal/Hard enabled)
+  - Tambah tests untuk Normal/Hard + bot arena CLI (head-to-head simulation)
+  - Tambah CI gate: Hard > Normal > Easy win-rate ≥60% di 1000 simulasi
+
+---
+
 ### 2026-10-15 — Sesi 4 (Phase 1 — GameEngine)
 
 **Yang dilakukan:**
