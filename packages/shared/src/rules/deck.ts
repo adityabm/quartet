@@ -17,11 +17,8 @@ export function createShuffledDeck(rng: () => number): Card[] {
 
   for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
-    const cardAtI = deck[i];
-    const cardAtJ = deck[j];
-    if (cardAtI === undefined || cardAtJ === undefined) {
-      continue;
-    }
+    const cardAtI = deck[i]!; // i ∈ [1, 51] → selalu ada
+    const cardAtJ = deck[j]!; // j ∈ [0, i] → selalu ada
     deck[i] = cardAtJ;
     deck[j] = cardAtI;
   }
