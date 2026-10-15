@@ -27,13 +27,13 @@ User juga boleh update manual kapan saja. Format entry di `§3` singkat saja: ta
 
 | Item | Status |
 |------|--------|
-| Repo | `D:\Server\web\quartet` (greenfield, belum ada kode) |
-| Phase saat ini | **Pre-Phase 0** (dokumentasi selesai, skeleton belum dimulai) |
-| Next milestone | Init monorepo (pnpm + turbo + tsconfig.base + hello world apps) |
-| Last update | 2026-10-15 (Sesi 1) |
-| Open blockers | 7 pertanyaan dari PRD §4.2 — user belum jawab (masih pakai default) |
-| Total file committed | 0 (belum `git init`) |
-| Total lines of code | 0 |
+| Repo | `D:\Server\web\quartet` (sudah di-init & push ke GitHub) |
+| Phase saat ini | **Phase 0 — Skeleton** ✅ COMPLETE |
+| Next milestone | Phase 1 — GameEngine (types, protocol catalog, rules pure functions) |
+| Last update | 2026-10-15 (Sesi 2) |
+| Open blockers | 7 PRD + 2 tambahan (lihat §5) — belum dijawab |
+| Total file committed | ~46 source files + ~8 config files |
+| Total lines of code | ~1500 LOC + ~500 LOC test |
 
 ---
 
@@ -41,21 +41,23 @@ User juga boleh update manual kapan saja. Format entry di `§3` singkat saja: ta
 
 > ✅ done · 🚧 in progress · ⏳ todo · 🚫 blocked · ⏸️ deferred
 
-### Phase 0 — Skeleton  ⏳ TODO
-- [ ] `pnpm-workspace.yaml` + `turbo.json` + root `package.json`
-- [ ] `tsconfig.base.json` (strict mode)
-- [ ] `apps/web` — Vite + React + TS hello world + Tailwind + Framer Motion
-- [ ] `apps/server` — Fastify + uWebSockets hello world + `GET /health`
-- [ ] `packages/shared` — folder skeleton + placeholder exports
-- [ ] `packages/bot-engine` — folder skeleton + placeholder exports
-- [ ] ESLint + Prettier (root config + per-package extends)
-- [ ] Husky + lint-staged hooks
-- [ ] Vitest config + 1 smoke test (`packages/shared`)
-- [ ] GitHub Actions: typecheck, test, lint, audit
-- [ ] `docker-compose.yml` (postgres + redis)
-- [ ] `README.md` (dev quickstart)
-- [ ] `.gitignore` + `.env.example`
-- [ ] First commit: `chore(repo): init monorepo skeleton`
+### Phase 0 — Skeleton  ✅ DONE (2026-10-15 Sesi 2)
+- [x] `pnpm-workspace.yaml` + `turbo.json` + root `package.json`
+- [x] `tsconfig.base.json` (strict mode + noUncheckedIndexedAccess + exactOptionalPropertyTypes)
+- [x] `apps/web` — Vite + React 18 + TS + Tailwind + Framer Motion + landing page (Bahasa Indonesia, batik token)
+- [x] `apps/server` — Fastify v5 + uWS (planned swap di Phase 4) + `/health` + config parser
+- [x] `packages/shared` — types, constants, deck rules (Fisher-Yates shuffle), seeded RNG (mulberry32) — 11 tests
+- [x] `packages/bot-engine` — tier interface + Easy random bot — 3 tests
+- [x] ESLint + Prettier root config + per-package extends
+- [x] Husky + lint-staged hooks
+- [x] Vitest di 4 packages (16 tests total, semua PASS)
+- [x] GitHub Actions: typecheck + lint + test + build + audit
+- [x] Dependabot weekly + CODEOWNERS
+- [x] `docker-compose.yml` (postgres + redis)
+- [x] `README.md` (dev quickstart)
+- [x] `.gitignore` + `.env.example`
+- [x] `SECURITY.md` + `docs/security/phase-0-review.md`
+- [x] Git init + 6 conventional commits + push ke `https://github.com/adityabm/quartet.git`
 
 ### Phase 1 — GameEngine  ⏳ TODO
 - [ ] `packages/shared/types` — Card, Player, GameState, Rank, Suit, RoomCode
@@ -108,25 +110,51 @@ Lihat `PROJECT_OVERVIEW.md` §5.1 untuk roadmap lengkap. Catatan singkat:
 
 ## 3. Session Log
 
+### 2026-10-15 — Sesi 2 (Phase 0 — Skeleton)
+
+**Yang dilakukan:**
+- ✅ Pre-execution checklist (skim PRD + Overview, identifikasi scope, konfirmasi tidak ada UI approval needed untuk skeleton).
+- ✅ Dispatch 4 lanes paralel via subagent:
+  - Lane B (apps/web) → React + Vite + Tailwind + Framer Motion landing.
+  - Lane C (apps/server) → Fastify + `/health` + config parser.
+  - Lane D (packages/shared + packages/bot-engine) → types, constants, deck rules, seeded RNG, Easy random bot.
+  - Lane E (quality gates) → ESLint, Prettier, Husky, GitHub Actions CI, Dependabot, CODEOWNERS, vitest workspace, SECURITY.md.
+- ✅ Verify setiap lane (read artifact langsung, bukan percaya ringkasan).
+- ✅ Reconcile hasil — semua file ada, struktur sesuai PROJECT_OVERVIEW §2.
+- ✅ **Security review via `security-best-practices` skill** — Phase 0 aman, 0 High/Critical. 3 Medium deferred ke Phase 4 (helmet, CSRF, rate-limit). Laporan di `docs/security/phase-0-review.md`.
+- ✅ **Fix audit findings**: fastify v4.29.1 punya 10 vulnerabilities (6 high, 3 moderate, 1 low) → upgrade ke fastify v5.12.5 + @fastify/cors v11. Audit sekarang: "No known vulnerabilities found".
+- ✅ **Fix TS project reference issue** di `apps/web/tsconfig.node.json` (`composite` + `noEmit` konflik) → set `emitDeclarationOnly: true` + outDir ke `.tmp`; ubah script typecheck dari `tsc -b --noEmit` ke `tsc -b`.
+- ✅ **Quality gates hijau**:
+  - typecheck: 5/5 packages
+  - test: 16/16 tests passed
+  - lint: 2/2 packages (server + web)
+  - build: 4/4 (Vite + tsc)
+  - audit: 0 vulnerabilities
+- ✅ `git init` + 6 conventional commits + push ke `https://github.com/adityabm/quartet.git`.
+- ✅ Update `PROGRESS.md` ini.
+
+**Decisions yang diambil:** (lihat §4 untuk detail)
+- D13: Upgrade fastify v4 → v5 untuk fix 10 audit vulnerabilities.
+- D14: Adjust `apps/web/tsconfig.node.json` + typecheck script untuk resolve project reference + noEmit konflik.
+
+**Open questions / blockers:**
+- 7 PRD + 2 tambahan masih open (lihat §5).
+
+**Next session plan:**
+- Phase 1 — GameEngine: tulis `packages/shared/types` lengkap (Card, Player, GameState, RoomCode), `packages/shared/protocol` (WS event catalog), `packages/shared/rules` (init, deal, ask, completeQuartet, isGameOver, applyAction) dengan unit tests 100% coverage.
+- Sebelum mulai: cek apakah user mau jawab open questions dulu (Q1–Q9).
+
+---
+
 ### 2026-10-15 — Sesi 1
 
 **Yang dilakukan:**
 - ✅ Brainstorm awal Quartet Web dengan user.
 - ✅ Grill 4 pertanyaan kunci (variant aturan, multiplayer arch, bot scope, MVP scope) — semua dijawab dengan recommended.
-- ✅ Buat `PRD.md` (v0.1) — Executive Summary, UX & Functionality, Bot Spec, Technical Spec, Risks & Roadmap.
-- ✅ Buat `PROJECT_OVERVIEW.md` (v0.1) — Repo structure, arsitektur, module breakdown, data flow, state machine, protocol, phased delivery, local dev setup.
-- ✅ Buat `AGENTS.md` (v0.1) — Operating manual: gameplay design (Quartet Indonesia + nuansa Nusantara), workflow rules (conventional commits, unit tests, DRY, component-based, security review), Definition of Done, Design Approval Flow.
+- ✅ Buat `PRD.md` (v0.1).
+- ✅ Buat `PROJECT_OVERVIEW.md` (v0.1).
+- ✅ Buat `AGENTS.md` (v0.1).
 - ✅ Buat `PROGRESS.md` (file ini).
-
-**Decisions yang diambil:** (lihat §4 untuk detail)
-- Variant: Quartet Indonesia klasik + bluffing.
-- Multiplayer: Real-time WebSocket dengan room code.
-- Bot: 3 tingkat (Easy/Normal/Hard).
-- Scope: MVP ramping.
-- Repo: Monorepo (pnpm + Turborepo), TS end-to-end.
-- Server authoritative; bot = pemain biasa (no cheat).
-- Indonesian flavor: lapisan presentasi (bahasa ID, visual batik subtle), bukan mengubah aturan.
-- Default tech: React + Node sampai user konfirmasi.
 
 **Open questions / blockers:**
 - 7 pertanyaan PRD §4.2 / PROJECT_OVERVIEW §11 masih pakai default — perlu jawaban user.
@@ -154,6 +182,8 @@ Lihat `PROJECT_OVERVIEW.md` §5.1 untuk roadmap lengkap. Catatan singkat:
 | D10 | 2026-10-15 | Quality gates wajib sebelum push | typecheck + test + lint + audit + security review | AGENTS §2.5, §4 |
 | D11 | 2026-10-15 | Conventional commits + DRY + component-based | Standar industri, memudahkan review & maintenance | AGENTS §2.1, §2.3, §2.4 |
 | D12 | 2026-10-15 | Unit tests wajib dengan coverage target | shared 100%, bot ≥90%, game ≥85%, FE hooks ≥80% | AGENTS §2.2 |
+| D13 | 2026-10-15 | Upgrade fastify v4 → v5 (5.12.5+) | Fix 10 audit vulnerabilities (6 high, 3 moderate, 1 low) | audit report Phase 0 |
+| D14 | 2026-10-15 | `apps/web` typecheck pakai `tsc -b` (no `--noEmit`) | Resolve TS project reference konflik dengan `composite: true` + `noEmit` | TS6310 error |
 
 ---
 
@@ -197,10 +227,10 @@ Lihat `PROJECT_OVERVIEW.md` §5.1 untuk roadmap lengkap. Catatan singkat:
 | `docker-compose.yml` | ⏳ TODO | — | Phase 0 |
 | `README.md` | ⏳ TODO | — | Phase 0 |
 | `.github/workflows/ci.yml` | ⏳ TODO | — | Phase 0 |
-| `apps/web/` | ⏳ TODO | — | Phase 0+ |
-| `apps/server/` | ⏳ TODO | — | Phase 0+ |
-| `packages/shared/` | ⏳ TODO | — | Phase 0+ |
-| `packages/bot-engine/` | ⏳ TODO | — | Phase 0+ |
+| `apps/web/` | ✅ v0.1 | 2026-10-15 | Phase 0 |
+| `apps/server/` | ✅ v0.1 | 2026-10-15 | Phase 0 |
+| `packages/shared/` | ✅ v0.1 (types+constants+rules+rng) | 2026-10-15 | Phase 0/1 |
+| `packages/bot-engine/` | ✅ v0.1 (Easy random) | 2026-10-15 | Phase 0/3 |
 | `tools/bot-arena/` | ⏳ TODO | — | Phase 3 |
 | `docs/RULES.md` | ⏳ TODO | — | Phase 1 |
 | `docs/PROTOCOL.md` | ⏳ TODO | — | Phase 1 |
@@ -212,18 +242,19 @@ Lihat `PROJECT_OVERVIEW.md` §5.1 untuk roadmap lengkap. Catatan singkat:
 
 ```
 ╔════════════════════════════════════════════════════════════╗
-║  Quartet Web — Status Sesi 1 (2026-10-15)                  ║
+║  Quartet Web — Status Sesi 2 (2026-10-15)                  ║
 ╠════════════════════════════════════════════════════════════╣
-║  📋 PRD                 ✅ Done                             ║
-║  🏗  Project Overview    ✅ Done                             ║
-║  🤖 Agent Manual         ✅ Done                             ║
-║  📈 Progress Tracker     ✅ Done (this file)                 ║
-║  💻 Code                 ⏳ Not started                     ║
-║  🧪 Tests                ⏳ Not started                     ║
-║  🚀 Deploy               ⏳ Not started                     ║
+║  📋 PRD                       ✅ Done (Sesi 1)               ║
+║  🏗  Project Overview          ✅ Done (Sesi 1)               ║
+║  🤖 Agent Manual               ✅ Done (Sesi 1)               ║
+║  📈 Progress Tracker           ✅ Done (this file)            ║
+║  💻 Phase 0 — Skeleton         ✅ Done (Sesi 2)               ║
+║  🧪 Tests (16 tests)           ✅ Passing                     ║
+║  🔒 Security Review            ✅ Done (0 High/Critical)      ║
+║  🚀 Push ke GitHub             ✅ Done                        ║
 ╠════════════════════════════════════════════════════════════╣
-║  Open blockers: 9 (7 PRD + 2 tambahan)                      ║
-║  Next action: tunggu user jawab blockers atau mulai Phase 0 ║
+║  Next: Phase 1 — GameEngine (rules + protocol catalog)     ║
+║  Open blockers: 9 (Q1–Q9, lihat §5)                          ║
 ╚════════════════════════════════════════════════════════════╝
 ```
 
