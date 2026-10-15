@@ -267,33 +267,73 @@ pnpm db:seed
 
 ## 9. Commit & Push Workflow
 
+**Aturan baru per Sesi 3 (lesson learned):**
+- **1 branch = 1 PR = 1 concern**. Tidak batch banyak concerns dalam 1 push.
+- **Tidak push langsung ke `main`** untuk kode produksi — selalu via branch + PR.
+- **Setiap destructive action ke GitHub remote** (branch delete, force push, close banyak PR) **wajib explicit go dari user** sebelum eksekusi.
+- **Quality gates + security review** dijalankan di branch, BUKAN setelah merge ke main.
+
+**Workflow per PR:**
+
 ```bash
-# 1. Stage
-git add -A
+# 1. Buat branch dari main (paling update)
+git checkout main
+git pull origin main
+git checkout -b feat/<short-kebab-description>
 
-# 2. Status
-git status
+# 2. Kerja — write code + tests
+#    - Conventional commits per logical chunk (kalau PR besar)
+#    - Tests WAJIB ikut dalam branch yang sama
 
-# 3. Commit (conventional)
-git commit -m "feat(game-engine): implement quartet detection"
-
-# 4. Pre-push quality gates (HARUS hijau semua)
+# 3. Pre-push quality gates (di branch, HARUS hijau semua)
 pnpm typecheck
 pnpm test
 pnpm lint
 pnpm audit
 
-# 5. Security review (manual via skill)
+# 4. Security review (manual via skill)
 #    → Invoke security-best-practices skill, review changeset
 
-# 6. Push (hanya jika SEMUA gate hijau & security review OK)
+# 5. Commit (conventional) + push branch
+git add -A
+git commit -m "feat(game-engine): implement quartet detection"
 git push origin feat/<branch-name>
+
+# 6. Buka PR via GitHub UI atau `gh pr create` (kalau token tersedia)
+
+# 7. Tunggu review/approval — JANGAN auto-merge tanpa eksplisit dari user
+
+# 8. Setelah approved, merge ke main (squash atau merge commit, sesuai preferensi user)
 ```
 
 Branch naming: `<type>/<short-kebab-description>`, contoh:
 - `feat/game-engine-quartet-detection`
 - `fix/ws-duplicate-ask`
 - `chore/init-monorepo`
+- `docs/security-review-phase-1`
+
+**Pengecualian** (boleh push langsung ke `main`):
+- Update `PROGRESS.md` saja (docs saja, no logic).
+- Update `AGENTS.md` / `PRD.md` / `PROJECT_OVERVIEW.md` saja.
+- Hotfix security critical yang tidak bisa tunggu review (tetap catat di PROGRESS untuk事后 audit).
+
+**Destructive actions yang WAJIB explicit go dari user:**
+- `git push --force` ke branch manapun.
+- `git push --delete` ke branch orang lain atau dependabot.
+- Bulk close/delete lebih dari 1 PR atau branch.
+- Reset history / `git rebase --interactive` pada commit yang sudah di-push.
+- Tag delete atau release rollback.
+
+---
+
+## 9.5 Dependabot Policy
+
+Sesuai `dependabot.yml`:
+- Dependabot **hanya boleh auto-open PR untuk minor + patch**.
+- Major version upgrades butuh eksplisit go dari user (manual PR).
+- Deps sensitif (typescript, vite, eslint, vitest, fastify, react, framer-motion, tailwindcss, dll.) **di-ignore** sampai eksplisit.
+- Limit 3 open PR per ecosystem.
+- Jika dependabot tiba-tiba buka banyak PR major → cek apakah ada perubahan dependabot.yml atau settings repo; tutup sesuai AGENTS §9 destructive actions protocol.
 
 ---
 
