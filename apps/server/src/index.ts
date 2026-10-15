@@ -6,6 +6,7 @@ import cors from '@fastify/cors';
 
 import { getServerConfig, type LogLevel, type ServerConfig } from './config.js';
 import { registerHealthRoutes } from './http/routes/health.js';
+import { registerSinglePlayerRoutes } from './http/routes/single-player.js';
 
 export interface BuildAppOptions {
   /** Override config (default: baca dari process.env). */
@@ -29,6 +30,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   await app.register(cors, { origin: config.nodeEnv !== 'production' });
 
   registerHealthRoutes(app);
+  registerSinglePlayerRoutes(app);
 
   return app;
 }

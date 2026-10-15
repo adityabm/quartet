@@ -1,9 +1,20 @@
-/** Halaman landing Quartet Web — skeleton Phase 0 (belum ada logika game). */
+import { useState } from 'react';
+import { GamePage } from './features/game/GamePage.js';
+
+type Route = 'home' | 'game';
+
+/** Halaman landing Quartet Web — routing state-based sederhana untuk Phase 2. */
 function App(): JSX.Element {
+  const [route, setRoute] = useState<Route>('home');
+
+  if (route === 'game') {
+    return <GamePage />;
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-8 bg-batik-cream px-4 py-12 text-batik-text">
       <span className="rounded-full border border-batik-primary/30 bg-white px-4 py-1.5 text-sm font-semibold text-batik-primary">
-        🚧 Phase 0 — Skeleton
+        🚧 Phase 2 — Single-player
       </span>
 
       <section className="flex max-w-xl flex-col items-center gap-3 text-center">
@@ -18,21 +29,26 @@ function App(): JSX.Element {
       <nav aria-label="Menu utama" className="flex flex-col items-center gap-3 sm:flex-row">
         <button
           type="button"
+          onClick={() => setRoute('game')}
           className="w-48 rounded-xl bg-batik-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-batik-primary/90 sm:w-auto"
         >
           Main Sendirian
         </button>
         <button
           type="button"
-          className="w-48 rounded-xl border border-batik-accent px-6 py-3 text-sm font-semibold text-batik-accent transition hover:bg-batik-accent/10 sm:w-auto"
+          disabled
+          className="w-48 cursor-not-allowed rounded-xl border border-batik-accent/50 px-6 py-3 text-sm font-semibold text-batik-accent/50 sm:w-auto"
+          title="Coming soon — Phase 4"
         >
-          Buat Room
+          Buat Room (Phase 4)
         </button>
         <button
           type="button"
-          className="w-48 rounded-xl border border-batik-text/20 px-6 py-3 text-sm font-semibold text-batik-text transition hover:bg-batik-text/5 sm:w-auto"
+          disabled
+          className="w-48 cursor-not-allowed rounded-xl border border-batik-text/20 px-6 py-3 text-sm font-semibold text-batik-text/50 sm:w-auto"
+          title="Coming soon — Phase 4"
         >
-          Gabung Room
+          Gabung Room (Phase 4)
         </button>
       </nav>
     </main>
