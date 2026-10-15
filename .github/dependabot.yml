@@ -1,6 +1,17 @@
+# Dependabot configuration untuk Quartet Web.
+#
+# Prinsip (sesuai AGENTS.md §2.5 + security-best-practices EXPRESS-DEPS-001):
+# - Major version upgrades TIDAK otomatis — butuh eksplisit go dari user.
+# - Hanya minor + patch.
+# - Limit PR supaya tidak membanjiri.
+# - Deps yang sensitif (typescript, vite, eslint, vitest) di-ignore sampai upgrade eksplisit.
+
 version: 2
+
+# Common defaults yang diterapkan ke semua ecosystem.
+# Setiap ecosystem bisa override per-field.
 updates:
-  # Root workspace manifest
+  # Root workspace manifest (tooling bersama)
   - package-ecosystem: npm
     directory: /
     schedule:
@@ -8,15 +19,23 @@ updates:
       day: monday
       time: "06:00"
       timezone: "Asia/Jakarta"
-    open-pull-requests-limit: 10
+    # Hanya minor + patch; major butuh eksplisit dari user.
+    update-types:
+      - minor
+      - patch
+    open-pull-requests-limit: 3
     versioning-strategy: increase
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
     groups:
       typescript-eslint:
         patterns:
           - "@typescript-eslint/*"
-        update-types:
-          - minor
-          - patch
       formatting:
         patterns:
           - "eslint"
@@ -25,12 +44,18 @@ updates:
           - "husky"
       tooling:
         patterns:
-          - "typescript"
           - "turbo"
-          - "vitest"
           - "@types/*"
+    # Deps yang sangat sensitif — block sampai upgrade eksplisit.
+    ignore:
+      - dependency-name: "typescript"
+        # Hanya update saat TypeScript 6.x stabil atau eksplisit diminta user.
+      - dependency-name: "eslint"
+        # eslint 9+ butuh config migration; blokir sampai manual upgrade.
+      - dependency-name: "vitest"
+        # vitest 3+ ada breaking di config; blokir sampai manual upgrade.
 
-  # Workspace packages (per pnpm-workspace.yaml: apps/*, packages/*, tools/*)
+  # packages/shared
   - package-ecosystem: npm
     directory: /packages/shared
     schedule:
@@ -38,11 +63,27 @@ updates:
       day: monday
       time: "06:00"
       timezone: "Asia/Jakarta"
+    update-types:
+      - minor
+      - patch
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
     groups:
       minor-and-patch:
         update-types:
           - minor
           - patch
+    ignore:
+      - dependency-name: "typescript"
+      - dependency-name: "vitest"
+
+  # packages/bot-engine
   - package-ecosystem: npm
     directory: /packages/bot-engine
     schedule:
@@ -50,11 +91,27 @@ updates:
       day: monday
       time: "06:00"
       timezone: "Asia/Jakarta"
+    update-types:
+      - minor
+      - patch
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
     groups:
       minor-and-patch:
         update-types:
           - minor
           - patch
+    ignore:
+      - dependency-name: "typescript"
+      - dependency-name: "vitest"
+
+  # apps/web
   - package-ecosystem: npm
     directory: /apps/web
     schedule:
@@ -62,11 +119,35 @@ updates:
       day: monday
       time: "06:00"
       timezone: "Asia/Jakarta"
+    update-types:
+      - minor
+      - patch
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
     groups:
       minor-and-patch:
         update-types:
           - minor
           - patch
+    ignore:
+      # Versi sensitif — tunggu eksplisit user.
+      - dependency-name: "vite"
+      - dependency-name: "vitest"
+      - dependency-name: "@vitejs/plugin-react"
+      - dependency-name: "tailwindcss"
+      - dependency-name: "react"
+        # React 19+ = breaking changes untuk komponen lama.
+      - dependency-name: "react-dom"
+      - dependency-name: "framer-motion"
+      - dependency-name: "@testing-library/*"
+
+  # apps/server
   - package-ecosystem: npm
     directory: /apps/server
     schedule:
@@ -74,8 +155,27 @@ updates:
       day: monday
       time: "06:00"
       timezone: "Asia/Jakarta"
+    update-types:
+      - minor
+      - patch
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
     groups:
       minor-and-patch:
         update-types:
           - minor
           - patch
+    ignore:
+      - dependency-name: "fastify"
+        # fastify 5+ sudah kita pakai; 6+ = breaking.
+      - dependency-name: "@fastify/*"
+      - dependency-name: "eslint"
+      - dependency-name: "vitest"
+      - dependency-name: "tsx"
+      - dependency-name: "ws"
